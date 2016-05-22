@@ -2,6 +2,17 @@
 
 /*
 |--------------------------------------------------------------------------
+| Routes File
+|--------------------------------------------------------------------------
+|
+| Here is where you will register all of the routes in an application.
+| It's a breeze. Simply tell Laravel the URIs it should respond to
+| and give it the controller to call when that URI is requested.
+|
+*/
+
+/*
+|--------------------------------------------------------------------------
 | Application Routes
 |--------------------------------------------------------------------------
 |
@@ -11,46 +22,22 @@
 |
 */
 
-use App\Task;
-use Illuminate\Http\Request;
+// Route::group(['middleware' => ['web']], function () {
 
-Route::group(['middleware' => ['web']], function () {
-    /**
-     * Show Task Dashboard
-     */
-    Route::get('/', function () {
-        return view('tasks', [
-            'tasks' => Task::orderBy('created_at', 'asc')->get()
-        ]);
-    });
+//     Route::get('/', function () {
+//         return view('welcome');
+//     })->middleware('guest');
 
-    /**
-     * Add New Task
-     */
-    Route::post('/task', function (Request $request) {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:255',
-        ]);
+//     Route::get('/tasks', 'TaskController@index');
+//     Route::post('/task', 'TaskController@store');
+//     Route::delete('/task/{task}', 'TaskController@destroy');
 
-        if ($validator->fails()) {
-            return redirect('/')
-                ->withInput()
-                ->withErrors($validator);
-        }
+//     Route::auth();
 
-        $task = new Task;
-        $task->name = $request->name;
-        $task->save();
-
-        return redirect('/');
-    });
-
-    /**
-     * Delete Task
-     */
-    Route::delete('/task/{id}', function ($id) {
-        Task::findOrFail($id)->delete();
-
-        return redirect('/');
-    });
-});
+// });
+Route::any('/',['middleware' => ['web'],'uses' => 'HomeController@index', 'as' =>'home']);
+Route::get('/delete/{id}', ['as'=> 'delete', 'uses'=>'HomeController@delete']);
+Route::get('/info/{id}', ['as'=> 'info', 'uses'=>'HomeController@info']);
+Route::post('/add',['middleware' => ['web'],'as'=> 'add', 'uses'=>'HomeController@add']);
+Route::get('/api/products', ['as'=> 'json', 'uses'=>'HomeController@productsjson']); 
+Route::get('/api/products/{id}', ['as'=> 'jsonid', 'uses'=>'HomeController@productjson']); 
